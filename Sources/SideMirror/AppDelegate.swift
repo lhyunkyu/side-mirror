@@ -32,11 +32,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             switch state {
             case .safe:
                 overlay.fadeOut()
-                setStatusIcon(symbol: "camera.fill", tint: nil)
             case .warning:
-                setStatusIcon(symbol: "camera.fill", tint: .systemYellow)
+                break
             case .privacyMode:
-                setStatusIcon(symbol: "camera.fill", tint: .systemRed)
                 overlay.fadeOut()
                 desktopSwitcher.activateSafeScreen()
             }
@@ -70,7 +68,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             .withSymbolConfiguration(config)
         image?.isTemplate = true
         button.image = image
-        button.contentTintColor = isPaused ? NSColor.secondaryLabelColor : tint
+        button.contentTintColor = tint
         button.title = ""
         button.alphaValue = 1.0
     }
@@ -81,11 +79,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             detector.stop()
             stateMachine.reset()
             overlay.fadeOut()
-            setStatusIcon(symbol: "camera.slash.fill", tint: nil)
             pauseMenuItem.title = "다시시작"
         } else {
             detector.start()
-            setStatusIcon(symbol: "camera.fill", tint: nil)
             pauseMenuItem.title = "일시정지"
         }
     }

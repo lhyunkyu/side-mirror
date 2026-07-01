@@ -5,6 +5,7 @@ struct WarningOverlayView: View {
     let direction: IntruderDirection
     let session: AVCaptureSession
     @State private var slideOffset: CGFloat = 300
+    @State private var cameraOpacity: Double = 0
 
     var body: some View {
         VStack {
@@ -28,23 +29,26 @@ struct WarningOverlayView: View {
     private func warningBadge(iconAlignment: Alignment) -> some View {
         ZStack(alignment: iconAlignment) {
             CameraPreviewView(session: session) {
-                // 카메라 렌더링 준비 완료 → 그때 슬라이드 업
+                withAnimation(.easeIn(duration: 0.3)) {
+                    cameraOpacity = 1
+                }
                 withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
                     slideOffset = 0
                 }
             }
+            .opacity(cameraOpacity)
 
             if let url = Bundle.module.url(forResource: "warning_icon", withExtension: "png"),
                let nsImage = NSImage(contentsOf: url) {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
-                    .padding(10)
+                    .frame(width: 52, height: 52)
+                    .padding(14)
             }
         }
-        .frame(width: 160, height: 160)
-        .background(Color.white)
+        .frame(width: 220, height: 220)
+        .background(Color.black)
         .clipShape(Circle())
         .mask(
             RadialGradient(
@@ -55,7 +59,7 @@ struct WarningOverlayView: View {
                 ]),
                 center: .center,
                 startRadius: 0,
-                endRadius: 80
+                endRadius: 110
             )
         )
         .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 6)

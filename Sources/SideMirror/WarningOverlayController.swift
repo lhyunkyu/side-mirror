@@ -7,6 +7,7 @@ final class WarningOverlayController {
     private var window: NSWindow?
     private var hostingView: NSHostingView<WarningOverlayView>?
     private var isFadingOut = false
+    private var lockedDirection: IntruderDirection?
 
     init(session: AVCaptureSession) {
         self.session = session
@@ -15,14 +16,18 @@ final class WarningOverlayController {
     func showImmediately(direction: IntruderDirection) {
         isFadingOut = false
 
+        // 처음 감지된 방향을 고정 — 이후 양쪽(center) 감지돼도 첫 방향 유지
+        if lockedDirection == nil { lockedDirection = direction }
+        let displayDirection = lockedDirection!
+
         if let window, let hostingView {
             window.alphaValue = 1
-            hostingView.rootView = WarningOverlayView(direction: direction, session: session)
+            hostingView.rootView = WarningOverlayView(direction: displayDirection, session: session)
             return
         }
 
         guard let screen = NSScreen.main else { return }
-        let view = NSHostingView(rootView: WarningOverlayView(direction: direction, session: session))
+        let view = NSHostingView(rootView: WarningOverlayView(direction: displayDirection, session: session))
         let panel = NSWindow(
             contentRect: screen.frame,
             styleMask: [.borderless],
@@ -45,6 +50,7 @@ final class WarningOverlayController {
 
     func fadeOut() {
         guard let window, !isFadingOut else { return }
+        lockedDirection = nil
         isFadingOut = true
         NSAnimationContext.runAnimationGroup({ context in
             context.duration = 0.4

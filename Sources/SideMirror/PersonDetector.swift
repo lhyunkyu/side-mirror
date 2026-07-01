@@ -75,7 +75,10 @@ final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
         let faces = faceRequest.results ?? []
         let bodies = bodyRequest.results ?? []
-        onDetection?(Self.analyze(faces: faces, bodies: bodies))
+        let result = Self.analyze(faces: faces, bodies: bodies)
+        let dir = result.intruderDirection.map { "\($0)" } ?? "없음"
+        print("[\(timestamp())] 감지: 총 \(result.totalCount)명, 침입자 방향: \(dir)")
+        onDetection?(result)
     }
 
     // A person can be reported as a face, a body, or both (face + torso for the
@@ -121,6 +124,12 @@ final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         return DetectionResult(totalCount: people.count, intruderDirection: direction)
     }
+}
+
+private func timestamp() -> String {
+    let f = DateFormatter()
+    f.dateFormat = "HH:mm:ss.SSS"
+    return f.string(from: Date())
 }
 
 private extension CGRect {

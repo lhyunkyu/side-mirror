@@ -1,5 +1,11 @@
 import Foundation
 
+private func timestamp() -> String {
+    let f = DateFormatter()
+    f.dateFormat = "HH:mm:ss.SSS"
+    return f.string(from: Date())
+}
+
 enum PrivacyState {
     case safe
     case warning
@@ -55,6 +61,13 @@ final class PrivacyStateMachine {
         let stateDidChange = newState != state
         state = newState
         if stateDidChange {
+            let label: String
+            switch newState {
+            case .safe:        label = "✅ SAFE"
+            case .warning:     label = "⚠️  WARNING"
+            case .privacyMode: label = "🔴 PRIVACY MODE"
+            }
+            print("[\(timestamp())] 상태 변경 → \(label)")
             onStateChanged?(newState)
         }
         if newState != .safe {

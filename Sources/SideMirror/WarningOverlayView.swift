@@ -39,11 +39,11 @@ struct WarningOverlayView: View {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 40, height: 40)
-                    .padding(10)
+                    .frame(width: 52, height: 52)
+                    .padding(14)
             }
         }
-        .frame(width: 160, height: 160)
+        .frame(width: 220, height: 220)
         .background(Color.white)
         .clipShape(Circle())
         .mask(
@@ -55,7 +55,7 @@ struct WarningOverlayView: View {
                 ]),
                 center: .center,
                 startRadius: 0,
-                endRadius: 80
+                endRadius: 110
             )
         )
         .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 6)

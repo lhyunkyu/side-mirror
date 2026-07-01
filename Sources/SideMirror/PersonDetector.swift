@@ -15,6 +15,8 @@ final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
 
     private let session = AVCaptureSession()
     private let videoQueue = DispatchQueue(label: "com.sidemirror.videoQueue")
+    private var lastProcessedAt: Date = .distantPast
+    private let processInterval: TimeInterval = 1.0 / 10  // 10fps 상당으로 Vision 처리 제한
 
     func start() {
         videoQueue.async { [weak self] in
@@ -47,12 +49,6 @@ final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
         session.addInput(input)
 
-        // 10fps로 제한해 CPU/전력 사용량 절감
-        try? device.lockForConfiguration()
-        device.activeVideoMinFrameDuration = CMTime(value: 1, timescale: 10)
-        device.activeVideoMaxFrameDuration = CMTime(value: 1, timescale: 10)
-        device.unlockForConfiguration()
-
         let output = AVCaptureVideoDataOutput()
         output.setSampleBufferDelegate(self, queue: videoQueue)
         output.alwaysDiscardsLateVideoFrames = true
@@ -66,6 +62,10 @@ final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         didOutput sampleBuffer: CMSampleBuffer,
         from connection: AVCaptureConnection
     ) {
+        let now = Date()
+        guard now.timeIntervalSince(lastProcessedAt) >= processInterval else { return }
+        lastProcessedAt = now
+
         guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
 
         let faceRequest = VNDetectFaceRectanglesRequest()

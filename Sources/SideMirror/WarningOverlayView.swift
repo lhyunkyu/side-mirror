@@ -46,6 +46,18 @@ struct WarningOverlayView: View {
         .frame(width: 160, height: 160)
         .background(Color.white)
         .clipShape(Circle())
-        .shadow(color: .black.opacity(0.25), radius: 14, x: 0, y: 4)
+        .mask(
+            RadialGradient(
+                gradient: Gradient(stops: [
+                    .init(color: .white, location: 0.0),
+                    .init(color: .white, location: 0.72),
+                    .init(color: .clear, location: 1.0)
+                ]),
+                center: .center,
+                startRadius: 0,
+                endRadius: 80
+            )
+        )
+        .shadow(color: .black.opacity(0.15), radius: 20, x: 0, y: 6)
     }
 }

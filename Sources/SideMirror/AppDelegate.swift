@@ -3,7 +3,7 @@ import Cocoa
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let detector = PersonDetector()
     private let stateMachine = PrivacyStateMachine()
-    private let overlay = WarningOverlayController()
+    private lazy var overlay = WarningOverlayController(session: detector.session)
     private let desktopSwitcher = DesktopSwitcher()
     private var statusItem: NSStatusItem!
     private var pauseMenuItem: NSMenuItem!
@@ -42,7 +42,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         stateMachine.onDirectionUpdate = { [weak self] direction in
-            self?.overlay.showImmediately(direction: direction ?? .center)
+            guard let direction else { return }
+            self?.overlay.showImmediately(direction: direction)
         }
     }
 

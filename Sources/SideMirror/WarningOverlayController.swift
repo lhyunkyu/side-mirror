@@ -1,22 +1,28 @@
 import Cocoa
 import SwiftUI
+import AVFoundation
 
 final class WarningOverlayController {
+    private let session: AVCaptureSession
     private var window: NSWindow?
     private var hostingView: NSHostingView<WarningOverlayView>?
     private var isFadingOut = false
+
+    init(session: AVCaptureSession) {
+        self.session = session
+    }
 
     func showImmediately(direction: IntruderDirection) {
         isFadingOut = false
 
         if let window, let hostingView {
             window.alphaValue = 1
-            hostingView.rootView = WarningOverlayView(direction: direction)
+            hostingView.rootView = WarningOverlayView(direction: direction, session: session)
             return
         }
 
         guard let screen = NSScreen.main else { return }
-        let view = NSHostingView(rootView: WarningOverlayView(direction: direction))
+        let view = NSHostingView(rootView: WarningOverlayView(direction: direction, session: session))
         let panel = NSWindow(
             contentRect: screen.frame,
             styleMask: [.borderless],

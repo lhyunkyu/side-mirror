@@ -13,10 +13,10 @@ struct DetectionResult {
 final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
     var onDetection: ((DetectionResult) -> Void)?
 
-    private let session = AVCaptureSession()
+    private(set) var session = AVCaptureSession()
     private let videoQueue = DispatchQueue(label: "com.sidemirror.videoQueue")
     private var lastProcessedAt: Date = .distantPast
-    private let processInterval: TimeInterval = 1.0 / 10  // 10fps 상당으로 Vision 처리 제한
+    private let processInterval: TimeInterval = 1.0 / 5  // 5fps 상당으로 Vision 처리 제한
 
     func start() {
         videoQueue.async { [weak self] in

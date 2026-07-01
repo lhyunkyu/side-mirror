@@ -13,8 +13,8 @@ enum PrivacyState {
 }
 
 final class PrivacyStateMachine {
-    private let warningThreshold: TimeInterval = 3.0
-    private let privacyThreshold: TimeInterval = 5.0
+    private let warningThreshold: TimeInterval = 1.0
+    private let privacyThreshold: TimeInterval = 3.0
     private let flickerGrace: TimeInterval = 0.4
 
     private(set) var state: PrivacyState = .safe

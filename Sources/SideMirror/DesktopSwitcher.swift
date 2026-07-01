@@ -27,10 +27,26 @@ final class DesktopSwitcher {
     }
 
     private func activate(bundleID: String) {
-        if let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleID }) {
-            app.activate(options: [.activateIgnoringOtherApps])
-        } else if let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) {
-            NSWorkspace.shared.openApplication(at: url, configuration: .init(), completionHandler: nil)
+        guard let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleID) else { return }
+        let config = NSWorkspace.OpenConfiguration()
+        config.activates = true
+        NSWorkspace.shared.openApplication(at: url, configuration: config) { [weak self] _, _ in
+            // 앱 활성화 후 AX로 창을 최상단으로 올림
+            DispatchQueue.main.async {
+                self?.raiseWindows(bundleID: bundleID)
+            }
+        }
+    }
+
+    private func raiseWindows(bundleID: String) {
+        guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleID }) else { return }
+        let axApp = AXUIElementCreateApplication(app.processIdentifier)
+        var windowsRef: CFTypeRef?
+        AXUIElementCopyAttributeValue(axApp, kAXWindowsAttribute as CFString, &windowsRef)
+        guard let windows = windowsRef as? [AXUIElement] else { return }
+        for window in windows {
+            AXUIElementSetAttributeValue(window, kAXMainAttribute as CFString, true as CFTypeRef)
+            AXUIElementSetAttributeValue(window, kAXFocusedAttribute as CFString, true as CFTypeRef)
         }
     }
 

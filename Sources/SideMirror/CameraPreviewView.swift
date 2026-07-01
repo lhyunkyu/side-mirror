@@ -14,7 +14,7 @@ struct CameraPreviewView: NSViewRepresentable {
         previewLayer.autoresizingMask = [.layerWidthSizable, .layerHeightSizable]
         if let connection = previewLayer.connection, connection.isVideoMirroringSupported {
             connection.automaticallyAdjustsVideoMirroring = false
-            connection.isVideoMirrored = false
+            connection.isVideoMirrored = true
         }
         view.layer?.addSublayer(previewLayer)
         return view

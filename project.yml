@@ -1,0 +1,40 @@
+name: SideMirror
+options:
+  bundleIdPrefix: com.sidemirror
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "15.0"
+
+targets:
+  SideMirror:
+    type: application
+    platform: macOS
+    deploymentTarget: "13.0"
+    sources:
+      - path: Sources/SideMirror
+        excludes:
+          - Resources
+    resources:
+      - path: Sources/SideMirror/Resources
+      - path: Resources/Info.plist
+        buildPhase: none
+    info:
+      path: Resources/Info.plist
+      properties:
+        CFBundleExecutable: SideMirror
+        CFBundleIdentifier: com.sidemirror.app
+        CFBundleName: SideMirror
+        CFBundleDisplayName: Side Mirror
+        CFBundlePackageType: APPL
+        CFBundleShortVersionString: "1.0"
+        CFBundleVersion: "1"
+        LSMinimumSystemVersion: "13.0"
+        LSUIElement: true
+        NSHighResolutionCapable: true
+        NSCameraUsageDescription: 화면 뒤에서 함께 화면을 보는 사람이 있는지 감지하기 위해 카메라를 사용합니다.
+    settings:
+      base:
+        PRODUCT_NAME: SideMirror
+        SWIFT_VERSION: "5.9"
+        ENABLE_HARDENED_RUNTIME: YES
+        CODE_SIGN_IDENTITY: "-"

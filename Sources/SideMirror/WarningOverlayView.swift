@@ -13,12 +13,12 @@ struct WarningOverlayView: View {
             Spacer()
             HStack(alignment: .bottom) {
                 if direction == .left || direction == .center {
-                    warningBadge(iconAlignment: .topLeading)
+                    warningBadge(iconAlignment: .topLeading, iconEdgePadding: .leading)
                         .padding(.leading, 48)
                 }
                 Spacer()
                 if direction == .right || direction == .center {
-                    warningBadge(iconAlignment: .topTrailing)
+                    warningBadge(iconAlignment: .topTrailing, iconEdgePadding: .trailing)
                         .padding(.trailing, 48)
                 }
             }
@@ -27,7 +27,7 @@ struct WarningOverlayView: View {
         .offset(y: slideOffset)
     }
 
-    private func warningBadge(iconAlignment: Alignment) -> some View {
+    private func warningBadge(iconAlignment: Alignment, iconEdgePadding: Edge.Set) -> some View {
         ZStack(alignment: iconAlignment) {
             CameraPreviewView(session: session) {
                 withAnimation(.easeIn(duration: 0.3)) {
@@ -46,7 +46,7 @@ struct WarningOverlayView: View {
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 34, height: 34)
                     .padding(.top, 40)
-                    .padding(.trailing, 40)
+                    .padding(iconEdgePadding, 40)
                     .opacity(iconOpacity)
                     .onAppear {
                         withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {

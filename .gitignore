@@ -32,6 +32,10 @@ playground.xcworkspace
 .build/
 dist/
 
+# macOS
+.DS_Store
+**/.DS_Store
+
 # CocoaPods
 #
 # We recommend against adding the Pods directory to your .gitignore. However

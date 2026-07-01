@@ -19,10 +19,13 @@ final class WarningOverlayController {
         if lockedDirection == nil { lockedDirection = direction }
         let displayDirection = lockedDirection!
 
-        if let window, let hostingView {
-            window.alphaValue = 1
+        if let window {
+            // 진행 중인 fadeOut 애니메이션 즉시 취소 후 복원
+            NSAnimationContext.runAnimationGroup { ctx in
+                ctx.duration = 0
+                window.animator().alphaValue = 1
+            }
             window.orderFrontRegardless()
-            hostingView.rootView = WarningOverlayView(direction: displayDirection, session: session)
             return
         }
 

@@ -6,6 +6,7 @@ struct WarningOverlayView: View {
     let session: AVCaptureSession
     @State private var slideOffset: CGFloat = 300
     @State private var cameraOpacity: Double = 0
+    @State private var iconOpacity: Double = 1
 
     var body: some View {
         VStack {
@@ -43,8 +44,15 @@ struct WarningOverlayView: View {
                 Image(nsImage: nsImage)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: 52, height: 52)
-                    .padding(14)
+                    .frame(width: 34, height: 34)
+                    .padding(.top, 40)
+                    .padding(.trailing, 40)
+                    .opacity(iconOpacity)
+                    .onAppear {
+                        withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
+                            iconOpacity = 0.15
+                        }
+                    }
             }
         }
         .frame(width: 220, height: 220)

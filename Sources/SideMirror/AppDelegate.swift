@@ -37,7 +37,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 setStatusIcon(symbol: "camera.fill", tint: .systemYellow)
             case .privacyMode:
                 setStatusIcon(symbol: "camera.fill", tint: .systemRed)
-                desktopSwitcher.showDesktop()
+                overlay.fadeOut()
+                desktopSwitcher.activateSafeScreen()
             }
         }
 

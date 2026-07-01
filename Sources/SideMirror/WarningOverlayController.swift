@@ -16,7 +16,10 @@ final class WarningOverlayController {
     func showImmediately(direction: IntruderDirection) {
         isFadingOut = false
 
-        if lockedDirection == nil { lockedDirection = direction }
+        if lockedDirection == nil {
+            // 양쪽 동시 감지면 오른쪽으로 고정
+            lockedDirection = (direction == .center) ? .right : direction
+        }
         let displayDirection = lockedDirection!
 
         if let window {

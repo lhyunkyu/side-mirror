@@ -23,22 +23,25 @@ struct WarningOverlayView: View {
             .padding(.bottom, 140)
         }
         .offset(y: slideOffset)
-        .onAppear {
-            withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
-                slideOffset = 0
-            }
-        }
     }
 
     private func warningBadge(iconAlignment: Alignment) -> some View {
         ZStack(alignment: iconAlignment) {
-            CameraPreviewView(session: session)
+            CameraPreviewView(session: session) {
+                // 카메라 렌더링 준비 완료 → 그때 슬라이드 업
+                withAnimation(.spring(response: 0.45, dampingFraction: 0.75)) {
+                    slideOffset = 0
+                }
+            }
 
-            Image("warning_icon", bundle: .module)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .frame(width: 40, height: 40)
-                .padding(10)
+            if let url = Bundle.module.url(forResource: "warning_icon", withExtension: "png"),
+               let nsImage = NSImage(contentsOf: url) {
+                Image(nsImage: nsImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 40, height: 40)
+                    .padding(10)
+            }
         }
         .frame(width: 160, height: 160)
         .background(Color.white)

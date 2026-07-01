@@ -114,11 +114,12 @@ final class PersonDetector: NSObject, AVCaptureVideoDataOutputSampleBufferDelega
         }
 
         let avgX = intruders.map(\.midX).reduce(0, +) / CGFloat(intruders.count)
+        // 프리뷰가 좌우반전되므로 방향도 반전
         let direction: IntruderDirection
         if avgX < 0.4 {
-            direction = .left
-        } else if avgX > 0.6 {
             direction = .right
+        } else if avgX > 0.6 {
+            direction = .left
         } else {
             direction = .center
         }

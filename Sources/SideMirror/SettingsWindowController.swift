@@ -20,7 +20,7 @@ private struct SettingsView: View {
         VStack(alignment: .leading, spacing: 20) {
             sliderSection(
                 title: "화면 띄우기 민감도",
-                subtitle: "침입자 감지 후 경고 화면이 뜨는 시간",
+                subtitle: "다른 사람 감지 후 경고 화면이 뜨는 시간",
                 value: $model.warningThreshold,
                 range: 0.3...3.0,
                 minLabel: "빠름", maxLabel: "느림"

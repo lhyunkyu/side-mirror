@@ -1,15 +1,20 @@
 import Cocoa
 
+private let kWarningKey = "sensitivityWarningThreshold"
+private let kPrivacyOffsetKey = "sensitivityPrivacyOffset"
+
 final class AppDelegate: NSObject, NSApplicationDelegate {
     private let detector = PersonDetector()
     private let stateMachine = PrivacyStateMachine()
     private lazy var overlay = WarningOverlayController(session: detector.session)
     private let desktopSwitcher = DesktopSwitcher()
+    private let settingsController = SettingsWindowController()
     private var statusItem: NSStatusItem!
     private var pauseMenuItem: NSMenuItem!
     private var isPaused = false
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        loadSettings()
         setupStatusItem()
         desktopSwitcher.requestAccessibilityPermissionIfNeeded()
         wireStateMachine()
@@ -24,6 +29,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ notification: Notification) {
         detector.stop()
+    }
+
+    private func loadSettings() {
+        let warning = UserDefaults.standard.double(forKey: kWarningKey)
+        let offset = UserDefaults.standard.double(forKey: kPrivacyOffsetKey)
+        stateMachine.warningThreshold = warning > 0 ? warning : SettingsWindowController.defaultWarning
+        stateMachine.privacyOffset = offset > 0 ? offset : SettingsWindowController.defaultPrivacyOffset
     }
 
     private func wireStateMachine() {
@@ -44,6 +56,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let direction else { return }
             self?.overlay.showImmediately(direction: direction)
         }
+
+        settingsController.onUpdate = { [weak self] warning, offset in
+            guard let self else { return }
+            stateMachine.warningThreshold = warning
+            stateMachine.privacyOffset = offset
+            UserDefaults.standard.set(warning, forKey: kWarningKey)
+            UserDefaults.standard.set(offset, forKey: kPrivacyOffsetKey)
+        }
     }
 
     private func setupStatusItem() {
@@ -54,6 +74,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
         let menu = NSMenu()
         menu.addItem(NSMenuItem(title: "Side Mirror", action: nil, keyEquivalent: ""))
+        menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: "설정...", action: #selector(openSettings), keyEquivalent: ","))
         menu.addItem(.separator())
         menu.addItem(pauseMenuItem)
         menu.addItem(.separator())
@@ -71,6 +93,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         button.contentTintColor = tint
         button.title = ""
         button.alphaValue = 1.0
+    }
+
+    @objc private func openSettings() {
+        settingsController.show(
+            warningThreshold: stateMachine.warningThreshold,
+            privacyOffset: stateMachine.privacyOffset
+        )
     }
 
     @objc private func togglePause() {

@@ -4,7 +4,8 @@ import SwiftUI
 private final class SettingsModel: ObservableObject {
     @Published var warningThreshold: Double
     @Published var privacyOffset: Double
-    var onChange: ((Double, Double) -> Void)?
+    var onSave: ((Double, Double) -> Void)?
+    var onReset: (() -> Void)?
 
     init(warningThreshold: Double, privacyOffset: Double) {
         self.warningThreshold = warningThreshold
@@ -14,7 +15,6 @@ private final class SettingsModel: ObservableObject {
 
 private struct SettingsView: View {
     @ObservedObject var model: SettingsModel
-    let onReset: () -> Void
 
     var body: some View {
         VStack(alignment: .leading, spacing: 20) {
@@ -36,17 +36,17 @@ private struct SettingsView: View {
 
             Divider()
 
-            Button("기본값으로 초기화") { onReset() }
-                .buttonStyle(.bordered)
+            HStack {
+                Button("기본값으로 초기화") { model.onReset?() }
+                    .buttonStyle(.bordered)
+                Spacer()
+                Button("저장") { model.onSave?(model.warningThreshold, model.privacyOffset) }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.blue)
+            }
         }
         .padding(24)
         .frame(width: 320)
-        .onChange(of: model.warningThreshold) { _ in notify() }
-        .onChange(of: model.privacyOffset) { _ in notify() }
-    }
-
-    private func notify() {
-        model.onChange?(model.warningThreshold, model.privacyOffset)
     }
 
     private func sliderSection(
@@ -80,8 +80,8 @@ private struct SettingsView: View {
 }
 
 final class SettingsWindowController {
-    static let defaultWarning: Double = 0.6
-    static let defaultPrivacyOffset: Double = 1.0
+    static let defaultWarning: Double = 1.0
+    static let defaultPrivacyOffset: Double = 2.0
 
     private var window: NSWindow?
     private var model: SettingsModel?
@@ -96,12 +96,19 @@ final class SettingsWindowController {
         }
 
         let m = SettingsModel(warningThreshold: warningThreshold, privacyOffset: privacyOffset)
-        m.onChange = { [weak self] w, p in self?.onUpdate?(w, p) }
+        m.onSave = { [weak self] w, p in
+            self?.onUpdate?(w, p)
+            self?.window?.close()
+            self?.window = nil
+            self?.model = nil
+        }
+        m.onReset = { [weak self] in
+            self?.model?.warningThreshold = Self.defaultWarning
+            self?.model?.privacyOffset = Self.defaultPrivacyOffset
+        }
         model = m
 
-        let hostingVC = NSHostingController(rootView: SettingsView(model: m) { [weak self] in
-            self?.reset()
-        })
+        let hostingVC = NSHostingController(rootView: SettingsView(model: m))
 
         let panel = NSPanel(
             contentRect: .zero,
@@ -117,11 +124,5 @@ final class SettingsWindowController {
 
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
-    }
-
-    private func reset() {
-        model?.warningThreshold = Self.defaultWarning
-        model?.privacyOffset = Self.defaultPrivacyOffset
-        onUpdate?(Self.defaultWarning, Self.defaultPrivacyOffset)
     }
 }

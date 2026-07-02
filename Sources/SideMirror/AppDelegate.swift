@@ -35,7 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let warning = UserDefaults.standard.double(forKey: kWarningKey)
         let offset = UserDefaults.standard.double(forKey: kPrivacyOffsetKey)
         stateMachine.warningThreshold = warning > 0 ? warning : SettingsWindowController.defaultWarning
-        stateMachine.privacyOffset = offset > 0 ? offset : SettingsWindowController.defaultPrivacyOffset
+        stateMachine.privacyOffset   = offset  > 0 ? offset  : SettingsWindowController.defaultPrivacyOffset
     }
 
     private func wireStateMachine() {

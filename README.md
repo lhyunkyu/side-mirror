@@ -41,3 +41,5 @@ open dist/SideMirror.app
 - **일시정지 / 다시시작** — 감지를 멈추거나 재개
 - **설정** — Warning/Privacy 진입 타이머 조절
 - **종료** — 앱 종료
+
+made by hk2008

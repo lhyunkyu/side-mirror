@@ -54,7 +54,7 @@ final class DesktopSwitcher {
         guard let app = NSWorkspace.shared.runningApplications.first(where: { $0.bundleIdentifier == bundleID }) else { return false }
         let axApp = AXUIElementCreateApplication(app.processIdentifier)
         var windowsRef: CFTypeRef?
-        AXUIElementCopyAttributeValue(axApp, kAXWindowsAttribute as CFString, &windowsRef)
+        AXUIElementCopyAttributeValue(axApp, kAXWindowsAttribute as CFString, & windowsRef)
         guard let windows = windowsRef as? [AXUIElement] else { return false }
         return windows.contains { window in
             var fsRef: CFTypeRef?
